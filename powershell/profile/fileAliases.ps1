@@ -15,3 +15,13 @@ function Get-FolderSize {
         }
     }
 }
+
+function ChangeExtension {
+    param( $ext )
+    Get-ChildItem | Rename-Item -NewName { [io.path]::ChangeExtension($_.name, $ext) }
+}
+
+function AliasFolder {
+    $profileFolder = Split-Path $PROFILE
+    code $profileFolder
+}
