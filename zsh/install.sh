@@ -15,3 +15,6 @@ cp -r ./myzsh.sh $HOME
 
 echo 'Copy alias'
 cp -r ./alias $HOME
+
+echo 'Copy theme'
+cp -r ./theme $HOME
