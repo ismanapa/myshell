@@ -26,3 +26,7 @@ bash ./install.sh
 chsh -s $(which zsh)
 ```
 
+
+To improve performance disable these modules from .zimrc
+- zmodule steeef
+- zmodule completion
