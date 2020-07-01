@@ -1,31 +1,56 @@
 alias kubens='kubectl get ns'
 
+function kubeusecontext(){
+    echo "Select the context to use:"
+    context=$(kubectl config get-contexts | fzf --height 30% --layout reverse | awk '{print $1}')
+    kubectl config use-context $context
+    echo "Context: $ns"
+}
+
 function kubesetns () {
-  ns=$(kubectl get ns | fzf --layout reverse  | awk '{print $1}')
-  kubectl config set-context --current --namespace="$ns"
+    echo "Select the namespace to use:"
+    ns=$(kubectl get ns | fzf --height 30% --layout reverse  | awk '{print $1}')
+    kubectl config set-context --current --namespace="$ns"
+    echo "Namespace: $ns"
 }
 
 function kubepods () {
-  ns=$(kubectl get ns | fzf --layout reverse | awk '{print $1}')
-  kubectl get pods -n "$ns"
+    echo "Select the namespace to see the pods:"
+    ns=$(kubectl get ns | fzf --height 30% --layout reverse | awk '{print $1}')
+    echo "Namespace: $ns"
+    kubectl get pods -n "$ns"
 }
 
 function kubesvcs () {
-  ns=$(kubectl get ns | fzf --layout reverse  | awk '{print $1}')
-  kubectl get svc -n "$ns"
+    echo "Select the namespace to see the services:"
+    ns=$(kubectl get ns | fzf --height 30% --layout reverse  | awk '{print $1}')
+    echo "Namespace: $ns"
+    kubectl get svc -n "$ns"
 }
 
 function kubelogs () {
-  ns=$(kubectl get ns | fzf --layout reverse  | awk '{print $1}')
-  pod=$(kubectl get pods -n $ns | fzf --layout reverse  | awk '{print $1}')
-  
-  kubectl logs "$pod" -n "$ns" --tail=50 --follow
+    echo "Select the namespace to see the pods:"
+    ns=$(kubectl get ns | fzf --height 30% --layout reverse  | awk '{print $1}')
+    echo "Namespace: $ns"
+
+    echo "Select the pod to get logs:"
+    pod=$(kubectl get pods -n $ns | fzf --height 30% --layout reverse  | awk '{print $1}')
+    echo "Pod: $pod"
+
+    kubectl logs "$pod" -n "$ns" --tail=50 --follow
 } 
 
 function kubeforwardsvc () {
-  ns=$(kubectl get ns | fzf --layout reverse  | awk '{print $1}')
-  svc=$(kubectl get svc -n $ns | fzf --layout reverse  | awk '{print $1}')
-  port=$(kubectl get svc $svc -n $ns --template='{{range .spec.ports}}{{.port}} {{.protocol}}{{"\n"}}{{end}}' | fzf --layout reverse  | awk '{print $1}')
+    echo "Select the namespace to see the services:"
+    ns=$(kubectl get ns | fzf --height 30% --layout reverse  | awk '{print $1}')
+    echo "Namespace: $ns"
 
-  kubectl port-forward service/"$svc" "$1":"$port" -n "$ns"
+    echo "Select the service to see the ports:"
+    svc=$(kubectl get svc -n $ns | fzf --height 30% --layout reverse  | awk '{print $1}')
+    echo "Service: $svc"
+
+    echo "Select the port to port-forward:"
+    port=$(kubectl get svc $svc -n $ns --template='{{range .spec.ports}}{{.port}} {{.protocol}}{{"\n"}}{{end}}' | fzf --height 30% --layout reverse  | awk '{print $1}')
+
+    kubectl port-forward service/"$svc" "$1":"$port" -n "$ns"
 } 
